@@ -1,0 +1,9 @@
+:host {
+    display: block;
+  }
+  
+  /* Garantit que le bouton est au-dessus de tout */
+  .md\:hidden {
+    z-index: 9999;
+  }
+

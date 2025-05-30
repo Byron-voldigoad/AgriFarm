@@ -1,0 +1,561 @@
+<div class="flex flex-col min-h-screen bg-gray-50">
+  <!-- Contenu principal (qui va s'étirer) -->
+  <div class="flex-grow p-4 sm:p-6">
+    <!-- Header -->
+    <div class="mb-8">
+      <div class="flex justify-between items-start">
+        <div>
+          <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">
+            Vos Cultures
+          </h1>
+          <p class="text-gray-500 mt-1">Gérez l'ensemble de vos plantations</p>
+        </div>
+        <button
+          (click)="openAddDialog()"
+          class="flex items-center justify-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg shadow-md transition-colors"
+        >
+          <svg
+            class="w-5 h-5 mr-2"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+            ></path>
+          </svg>
+          Ajouter
+        </button>
+      </div>
+
+      <!-- Search bar -->
+      <div class="mt-6 relative">
+        <div
+          class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+        >
+          <svg
+            class="h-5 w-5 text-gray-400"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+            ></path>
+          </svg>
+        </div>
+        <input
+          [(ngModel)]="searchTerm"
+          class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+          placeholder="Rechercher une culture..."
+          type="search"
+        />
+      </div>
+    </div>
+
+    <!-- Version desktop - Grille de cartes avec hauteur fixe -->
+    <div class="hidden md:grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+      @for (culture of paginatedCultures(); track culture.id) {
+      <div
+        class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow flex flex-col h-full"
+      >
+        <div class="p-6 flex-grow">
+          <div class="flex justify-between items-start">
+            <h3
+              class="text-xl font-semibold text-gray-900 break-words whitespace-pre-wrap"
+            >
+              {{ culture.nom }}
+            </h3>
+          </div>
+          <div class="mt-4 text-gray-600 whitespace-pre-wrap flex-grow">
+            {{ culture.description || "Aucune description disponible" }}
+          </div>
+        </div>
+        <div class="p-4 bg-gray-50 border-t border-gray-100">
+          <div class="flex justify-end space-x-2">
+            <button
+              (click)="openEditDialog(culture); $event.stopPropagation()"
+              class="flex items-center px-3 py-1.5 text-sm bg-white text-blue-600 hover:text-blue-800 rounded-md border border-gray-300 hover:border-blue-300 shadow-sm transition-colors"
+            >
+              <svg
+                class="w-4 h-4 mr-1"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                ></path>
+              </svg>
+              Modifier
+            </button>
+            <button
+              (click)="
+                showDeleteDialog.set(true);
+                currentCulture.set(culture);
+                $event.stopPropagation()
+              "
+              class="flex items-center px-3 py-1.5 text-sm bg-white text-red-600 hover:text-red-800 rounded-md border border-gray-300 hover:border-red-300 shadow-sm transition-colors"
+            >
+              <svg
+                class="w-4 h-4 mr-1"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                ></path>
+              </svg>
+              Supprimer
+            </button>
+          </div>
+        </div>
+      </div>
+      }
+    </div>
+
+    <!-- Version mobile - Liste avec accordéon -->
+    <div class="md:hidden space-y-3">
+      @for (culture of paginatedCultures(); track culture.id) {
+      <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+        <div class="p-4">
+          <div class="flex justify-between items-center">
+            <h3 class="text-lg font-medium text-gray-900 truncate pr-2">
+              {{ culture.nom }}
+            </h3>
+            <div class="flex space-x-2 flex-shrink-0">
+              <button
+                (click)="openEditDialog(culture); $event.stopPropagation()"
+                class="text-blue-600 hover:text-blue-800 p-1.5 rounded-md hover:bg-blue-50 transition-colors"
+                title="Modifier"
+              >
+                <svg
+                  class="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                  ></path>
+                </svg>
+              </button>
+              <button
+                (click)="
+                  showDeleteDialog.set(true);
+                  currentCulture.set(culture);
+                  $event.stopPropagation()
+                "
+                class="text-red-600 hover:text-red-800 p-1.5 rounded-md hover:bg-red-50 transition-colors"
+                title="Supprimer"
+              >
+                <svg
+                  class="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                  ></path>
+                </svg>
+              </button>
+              <button
+                (click)="toggleDescription(culture.id)"
+                class="text-gray-500 hover:text-gray-700 p-1.5 rounded-md hover:bg-gray-100 transition-colors"
+                [attr.aria-expanded]="
+                  expandedDescriptions[culture.id] ? 'true' : 'false'
+                "
+              >
+                <svg
+                  class="w-5 h-5 transform transition-transform"
+                  [class.rotate-180]="expandedDescriptions[culture.id]"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M19 9l-7 7-7-7"
+                  ></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Description avec accordéon -->
+          <div
+            class="mt-2"
+            [class.max-h-0]="!expandedDescriptions[culture.id]"
+            [class.max-h-[500px]]="expandedDescriptions[culture.id]"
+            class="overflow-hidden transition-all duration-200 ease-in-out"
+          >
+            <p class="text-gray-600 text-sm whitespace-pre-wrap overflow-auto">
+              {{ culture.description || "Aucune description disponible" }}
+            </p>
+          </div>
+        </div>
+      </div>
+      }
+    </div>
+
+    <!-- État vide -->
+    @if (!loading() && filteredCultures().length === 0) {
+    <div
+      class="bg-white rounded-xl shadow-sm overflow-hidden text-center py-12"
+    >
+      <div
+        class="mx-auto h-24 w-24 bg-green-100 rounded-full flex items-center justify-center"
+      >
+        <svg
+          class="h-12 w-12 text-green-600"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"
+          ></path>
+        </svg>
+      </div>
+      <h3 class="mt-4 text-lg font-medium text-gray-900">
+        Aucune culture enregistrée
+      </h3>
+      <p class="mt-1 text-sm text-gray-500 max-w-md mx-auto">
+        Commencez par ajouter votre première culture pour la voir apparaître
+        ici.
+      </p>
+      <div class="mt-6">
+        <button
+          (click)="openAddDialog()"
+          class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg shadow-md transition-colors"
+        >
+          <svg
+            class="-ml-1 mr-2 h-5 w-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+            ></path>
+          </svg>
+          Ajouter une culture
+        </button>
+      </div>
+    </div>
+    }
+
+    <!-- État de chargement -->
+    @if (loading()) {
+    <div class="flex justify-center items-center py-12">
+      <div
+        class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"
+      ></div>
+    </div>
+    }
+
+    <!-- Add/Edit Dialog -->
+    @if (showFormDialog()) {
+    <div
+      class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto overflow-x-hidden"
+    >
+      <div
+        class="relative bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto animate-in fade-in duration-300"
+      >
+        <div class="p-6">
+          <div
+            class="flex items-center justify-between mb-6 border-b border-gray-200 pb-4"
+          >
+            <h3 class="text-xl font-semibold text-gray-900">
+              {{ isEditing() ? "Modifier la culture" : "Ajouter une culture" }}
+            </h3>
+            <button
+              (click)="showFormDialog.set(false)"
+              class="rounded-full p-1 hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-200"
+              aria-label="Fermer"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="text-gray-500"
+              >
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+
+          <form
+            [formGroup]="cultureForm"
+            (ngSubmit)="onSubmit()"
+            class="space-y-5"
+          >
+            <div class="grid grid-cols-1 gap-5">
+              <!-- Name -->
+              <div class="space-y-2">
+                <label for="nom" class="block text-sm font-medium text-gray-700"
+                  >Nom de la culture</label
+                >
+                <input
+                  id="nom"
+                  formControlName="nom"
+                  type="text"
+                  class="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm transition-colors focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
+                />
+                @if (cultureForm.get('nom')?.invalid &&
+                cultureForm.get('nom')?.touched) {
+                <div class="text-red-500 text-xs mt-1">
+                  Le nom doit contenir au moins 2 caractères
+                </div>
+                }
+              </div>
+
+              <!-- Description -->
+              <div class="space-y-2">
+                <label
+                  for="description"
+                  class="block text-sm font-medium text-gray-700"
+                  >Description</label
+                >
+                <textarea
+                  id="description"
+                  formControlName="description"
+                  rows="3"
+                  class="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm transition-colors focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
+                ></textarea>
+              </div>
+            </div>
+
+            <div
+              class="flex justify-end gap-3 pt-4 border-t border-gray-200 mt-6"
+            >
+              <button
+                type="button"
+                (click)="showFormDialog.set(false)"
+                class="inline-flex items-center justify-center px-4 py-2 border border-gray-300 shadow-sm rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 transition-colors"
+              >
+                Annuler
+              </button>
+              <button
+                type="submit"
+                [disabled]="cultureForm.invalid || submitting()"
+                class="inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                @if (submitting()) {
+                <svg
+                  class="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    class="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    stroke-width="4"
+                  ></circle>
+                  <path
+                    class="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
+                </svg>
+                }
+                {{ isEditing() ? "Mettre à jour" : "Ajouter" }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    }
+
+    <!-- Delete confirmation dialog -->
+    @if (showDeleteDialog()) {
+    <div
+      class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4"
+    >
+      <div
+        class="bg-white rounded-lg shadow-xl max-w-md w-full animate-in fade-in duration-300"
+      >
+        <div class="p-6">
+          <div class="mb-5">
+            <div
+              class="flex items-center justify-center w-12 h-12 mx-auto mb-4 rounded-full bg-red-100"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="text-red-600"
+              >
+                <path
+                  d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"
+                ></path>
+                <line x1="12" y1="9" x2="12" y2="13"></line>
+                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+              </svg>
+            </div>
+            <h3 class="text-lg font-semibold text-center text-gray-900">
+              Confirmer la suppression
+            </h3>
+            <p class="text-gray-500 text-center mt-2">
+              Êtes-vous sûr de vouloir supprimer la culture "{{
+                currentCulture()?.nom
+              }}" ? Cette action est irréversible.
+            </p>
+          </div>
+
+          <div class="flex justify-center gap-3 pt-4">
+            <button
+              (click)="showDeleteDialog.set(false)"
+              class="inline-flex items-center justify-center px-4 py-2 border border-gray-300 shadow-sm rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 transition-colors"
+            >
+              Annuler
+            </button>
+            <button
+              (click)="confirmDelete()"
+              [disabled]="submitting()"
+              class="inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              @if (submitting()) {
+              <svg
+                class="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  class="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  stroke-width="4"
+                ></circle>
+                <path
+                  class="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
+              </svg>
+              } Supprimer
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    }
+  </div>
+
+  <!-- Pagination (toujours en bas) -->
+  <div class="shrink-0 pb-4">
+    <nav class="flex justify-center mt-4" *ngIf="totalPages() > 1">
+      <div
+        class="inline-flex flex-wrap items-center rounded-xl shadow-sm bg-gray-50/90 px-2 py-1 gap-1"
+        aria-label="Pagination"
+        style="max-width: 100vw"
+      >
+        <button
+          class="h-9 w-9 sm:h-10 sm:w-10 flex items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 hover:bg-green-50 hover:text-green-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-green-400"
+          [disabled]="currentPage === 1"
+          (click)="goToPage(currentPage - 1)"
+          aria-label="Page précédente"
+        >
+          <svg
+            class="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M15 19l-7-7 7-7"
+            />
+          </svg>
+        </button>
+        <ng-container
+          *ngFor="let page of [].constructor(totalPages()); let i = index"
+        >
+          <button
+            class="h-9 w-9 sm:h-10 sm:w-10 flex items-center justify-center rounded-full border border-gray-200 transition-colors font-medium text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-green-400"
+            [ngClass]="{
+              'bg-green-600 text-white shadow font-bold': currentPage === i + 1,
+              'bg-white text-gray-700 hover:bg-green-100 hover:text-green-700':
+                currentPage !== i + 1
+            }"
+            (click)="goToPage(i + 1)"
+            [attr.aria-current]="currentPage === i + 1 ? 'page' : null"
+          >
+            {{ i + 1 }}
+          </button>
+        </ng-container>
+        <button
+          class="h-9 w-9 sm:h-10 sm:w-10 flex items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 hover:bg-green-50 hover:text-green-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-green-400"
+          [disabled]="currentPage === totalPages()"
+          (click)="goToPage(currentPage + 1)"
+          aria-label="Page suivante"
+        >
+          <svg
+            class="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 5l7 7-7 7"
+            />
+          </svg>
+        </button>
+      </div>
+    </nav>
+  </div>
+</div>

@@ -1,0 +1,34 @@
+/* Style personnalisé pour le canvas du graphique */
+chart-container {
+  position: relative;
+  min-height: 300px;
+  width: 100%;
+}
+
+@media (max-width: 640px) {
+  .chart-container {
+    min-height: 250px;
+  }
+}
+
+/* Amélioration de l'affichage des tableaux sur mobile */
+@media (max-width: 640px) {
+  table {
+    font-size: 0.75rem;
+  }
+  th, td {
+    padding: 0.5rem;
+  }
+}
+
+/* Style pour la pagination mobile */
+.pagination-mobile {
+  display: flex;
+  justify-content: center;
+  gap: 0.25rem;
+}
+
+.pagination-mobile button {
+  min-width: 2rem;
+  padding: 0.25rem;
+}

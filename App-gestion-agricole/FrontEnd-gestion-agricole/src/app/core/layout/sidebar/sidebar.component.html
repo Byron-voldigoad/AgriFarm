@@ -1,0 +1,64 @@
+<!-- Version desktop -->
+<div class="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0 bg-white border-r">
+  <div class="flex flex-col h-full">
+    <div class="flex h-16 items-center px-4 border-b">
+      <a routerLink="/" class="flex items-center gap-2 text-lg font-semibold">
+        <lucide-icon [name]="icons.Leaf" class="h-6 w-6 text-green-600"></lucide-icon>
+        <span>AgriFarm</span>
+      </a>
+    </div>
+    <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
+      <a *ngFor="let link of getFilteredLinks()" 
+         [routerLink]="link.path"
+         routerLinkActive="bg-green-50 text-green-600"
+         class="flex items-center gap-3 p-2 rounded-md hover:bg-gray-50 group">
+        <lucide-icon [name]="getIcon(link.icon)" 
+                     class="h-5 w-5 text-gray-500 group-hover:text-green-600"></lucide-icon>
+        <span>{{link.label}}</span>
+      </a>
+    </nav>
+    <div class="p-4 border-t">
+      <button class="w-full flex items-center justify-center gap-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
+        <lucide-icon [name]="icons.Leaf" class="h-4 w-4"></lucide-icon>
+        <span>Nouvelle culture</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Version mobile -->
+<button (click)="toggleMenu()" 
+        class="md:hidden fixed top-4 left-4 z-[100] p-2 rounded-md bg-white/30 backdrop-blur-sm border border-gray-100/30 shadow-sm hover:bg-white/50 transition-all">
+  <lucide-icon [name]="mobileMenuOpen ? icons.X : icons.Menu" class="h-5 w-5 text-gray-700"></lucide-icon>
+</button>
+
+<div *ngIf="mobileMenuOpen" 
+     class="md:hidden fixed inset-0 bg-black/50 z-[90]"
+     (click)="toggleMenu()"></div>
+
+<div *ngIf="mobileMenuOpen" 
+     class="md:hidden fixed inset-y-0 left-0 z-[95] w-64 bg-white shadow-lg">
+  <div class="flex h-16 items-center px-4 border-b">
+    <a routerLink="/" class="flex items-center gap-2 text-lg font-semibold" (click)="toggleMenu()">
+      <lucide-icon [name]="icons.Leaf" class="h-6 w-6 text-green-600"></lucide-icon>
+      <span>AgriFarm</span>
+    </a>
+  </div>
+  <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
+    <a *ngFor="let link of getFilteredLinks()" 
+       [routerLink]="link.path"
+       (click)="toggleMenu()"
+       routerLinkActive="bg-green-50 text-green-600"
+       class="flex items-center gap-3 p-2 rounded-md hover:bg-gray-50 group">
+      <lucide-icon [name]="getIcon(link.icon)" 
+                   class="h-5 w-5 text-gray-500 group-hover:text-green-600"></lucide-icon>
+      <span>{{link.label}}</span>
+    </a>
+  </nav>
+  <div class="p-4 border-t">
+    <button class="w-full flex items-center justify-center gap-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
+      <lucide-icon [name]="icons.Leaf" class="h-4 w-4"></lucide-icon>
+      <span>Nouvelle culture</span>
+    </button>
+  </div>
+</div>

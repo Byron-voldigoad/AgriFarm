@@ -1,0 +1,41 @@
+/* dashboard.component.css */
+:host {
+    display: block;
+  }
+  
+  /* Couleurs Tailwind compatibles */
+  .bg-green-100 {
+    background-color: #dcfce7;
+  }
+  .text-green-600 {
+    color: #16a34a;
+  }
+  .bg-blue-100 {
+    background-color: #dbeafe;
+  }
+  .text-blue-500 {
+    color: #3b82f6;
+  }
+  .bg-orange-100 {
+    background-color: #ffedd5;
+  }
+  .text-orange-500 {
+    color: #f97316;
+  }
+  .bg-yellow-100 {
+    background-color: #fef9c3;
+  }
+  
+  /* Transitions pour le menu mobile */
+  .fixed {
+    transition: transform 0.3s ease;
+  }
+  
+  /* Responsive */
+  @media (min-width: 768px) {
+    .md\:hidden {
+      display: none;
+    }
+    
+  }
+

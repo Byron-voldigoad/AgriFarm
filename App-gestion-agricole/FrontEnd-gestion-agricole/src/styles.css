@@ -1,0 +1,8 @@
+/* You can add global styles to this file, and also import other style files */
+@import "tailwindcss";
+
+.main-content {
+    margin-top: 56px; /* Hauteur approximative de votre header + bouton */
+  }
+ 
+  
