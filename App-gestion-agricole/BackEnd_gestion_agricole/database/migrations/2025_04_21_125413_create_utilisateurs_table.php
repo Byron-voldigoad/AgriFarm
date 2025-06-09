@@ -18,7 +18,8 @@ class CreateUtilisateursTable extends Migration
             $table->string('nom');
             $table->string('email')->unique();
             $table->string('motDePasse');
-            $table->enum('type', ['Agriculteur', 'OuvrierAgricole', 'Administrateur']);
+            $table->text('photo')->nullable(); // Modification du champ photo en TEXT
+            $table->boolean('actif')->default(true);
             $table->timestamps();
         });
         

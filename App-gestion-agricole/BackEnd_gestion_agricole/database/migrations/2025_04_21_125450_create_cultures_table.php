@@ -16,10 +16,11 @@ class CreateCulturesTable extends Migration
         Schema::create('cultures', function (Blueprint $table) {
             $table->id();
             $table->string('nom');
-            $table->date('datePlantation')->nullable();
-            $table->date('dateRecolte')->nullable();
-            $table->string('stadeCroissance')->nullable();
-            $table->foreignId('agriculteur_id')->constrained('utilisateurs')->onDelete('cascade');
+            $table->date('datePlantation')->nullable()->change();
+            $table->date('dateRecolte')->nullable()->change();
+            $table->foreignId('agriculteur_id')->nullable()->constrained('utilisateurs')->onDelete('cascade');
+            $table->foreignId('parcelle_id')->nullable()->constrained('parcelles')->onDelete('cascade');
+            $table->string('description')->nullable();
             $table->timestamps();
         });
         

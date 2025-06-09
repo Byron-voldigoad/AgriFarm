@@ -9,7 +9,7 @@ class Utilisateur extends Model
 {
     use HasFactory;
     protected $table = 'utilisateurs'; // Nom de la table si différent du modèle
-    protected $fillable = ['nom', 'email', 'password', 'actif'];
+    protected $fillable = ['nom', 'email', 'password', 'actif', 'photo'];
 
     // Relation avec le modèle Role pour la gestion multi-rôles
     public function roles()

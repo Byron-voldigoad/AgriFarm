@@ -28,7 +28,6 @@ class DatabaseSeeder extends Seeder
         DB::table('finances')->truncate();
         DB::table('rendements')->truncate();
         DB::table('taches')->truncate();
-        DB::table('capteur_io_ts')->truncate();
         DB::table('analyses')->truncate();
         DB::table('recommandations')->truncate();
         DB::table('notifications')->truncate();
@@ -67,6 +66,20 @@ class DatabaseSeeder extends Seeder
             [
                 'nom' => 'Sophie Lambert',
                 'email' => 'sophie.lambert@example.com',
+                'motDePasse' => Hash::make('password'),
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'nom' => 'Jean Dupont',
+                'email' => 'jean.dupont@example.com',
+                'motDePasse' => Hash::make('password'),
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'nom' => 'Marie Claire',
+                'email' => 'marie.claire@example.com',
                 'motDePasse' => Hash::make('password'),
                 'created_at' => now(),
                 'updated_at' => now()
@@ -131,6 +144,24 @@ class DatabaseSeeder extends Seeder
                 'agriculteur_id' => 4,
                 'created_at' => now(),
                 'updated_at' => now()
+            ],
+            [
+                'nom' => 'Parcelle Est',
+                'surface' => 8.50,
+                'localisation' => '4.123456, 11.654321',
+                'etat' => 'En culture',
+                'agriculteur_id' => 2,
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'nom' => 'Parcelle Ouest',
+                'surface' => 6.75,
+                'localisation' => '3.987654, 10.123456',
+                'etat' => 'En jachère',
+                'agriculteur_id' => 4,
+                'created_at' => now(),
+                'updated_at' => now()
             ]
         ]);
 
@@ -168,8 +199,79 @@ class DatabaseSeeder extends Seeder
                 'description' => 'Colza cultivé sur la parcelle Sud.',
                 'created_at' => now(),
                 'updated_at' => now()
+            ],
+            [
+                'nom' => 'Cacao',
+                'description' => 'Cacao cultivé dans la région du Centre.',
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'nom' => 'Café',
+                'description' => 'Café cultivé dans la région de l\'Ouest.',
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'nom' => 'Banane Plantain',
+                'description' => 'Banane Plantain cultivée dans la région du Littoral.',
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'nom' => 'Manioc',
+                'description' => 'Manioc cultivé dans la région de l\'Est.',
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'nom' => 'Arachide',
+                'description' => 'Arachide cultivée dans la région du Nord.',
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'nom' => 'Mil',
+                'description' => 'Mil cultivé dans la région de l\'Extrême-Nord.',
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'nom' => 'Sorgho',
+                'description' => 'Sorgho cultivé dans la région de l\'Adamaoua.',
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'nom' => 'Patate Douce',
+                'description' => 'Patate Douce cultivée dans la région du Sud.',
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'nom' => 'Igname',
+                'description' => 'Igname cultivée dans la région du Centre.',
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'nom' => 'Tomate',
+                'description' => 'Tomate cultivée dans la région de l\'Ouest.',
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'nom' => 'Ananas',
+                'description' => 'Ananas cultivé dans la région du Littoral.',
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'nom' => 'Papaye',
+                'description' => 'Papaye cultivée dans la région du Sud.',
+                'created_at' => now(),
+                'updated_at' => now()
             ]
-            
         ]);
     
         // 5. Finances - Données mensuelles de 2024 à maintenant
@@ -296,28 +398,7 @@ class DatabaseSeeder extends Seeder
             ]);
         }
 
-        // 8. Capteurs IoT
-        for ($i = 1; $i <= 30; $i++) { // 30 jours de données
-            DB::table('capteur_io_ts')->insert([
-                'type' => 'Humidité',
-                'valeur' => rand(40, 70).'%',
-                'dateMesure' => $now->copy()->subDays(30 - $i),
-                'parcelle_id' => rand(1, 3),
-                'created_at' => now(),
-                'updated_at' => now()
-            ]);
-            
-            DB::table('capteur_io_ts')->insert([
-                'type' => 'Température',
-                'valeur' => rand(15, 30).'°C',
-                'dateMesure' => $now->copy()->subDays(30 - $i),
-                'parcelle_id' => rand(1, 3),
-                'created_at' => now(),
-                'updated_at' => now()
-            ]);
-        }
-
-        // 9. Analyses et Recommandations
+        // 8. Analyses et Recommandations
         $analyses = [
             ['2025-04-15', 'Analyse du sol pour la parcelle 1', 1],
             ['2025-03-10', 'Analyse du pH du sol', 2]

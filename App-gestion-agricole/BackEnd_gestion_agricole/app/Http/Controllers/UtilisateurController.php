@@ -23,6 +23,7 @@ class UtilisateurController extends Controller
             'motDePasse' => 'required|string|min:8',
             'roles' => 'required|array',
             'roles.*' => 'exists:roles,id',
+            'photo' => 'nullable|string', // Ajout de la validation du champ photo
         ]);
         $validated['motDePasse'] = bcrypt($validated['motDePasse']);
         $utilisateur = Utilisateur::create($validated);
@@ -47,6 +48,7 @@ class UtilisateurController extends Controller
             'roles' => 'sometimes|array',
             'roles.*' => 'exists:roles,id',
             'actif' => 'sometimes|boolean',
+            'photo' => 'nullable|string', // Ajout de la validation du champ photo
         ]);
         if (isset($validated['motDePasse'])) {
             $validated['motDePasse'] = bcrypt($validated['motDePasse']);

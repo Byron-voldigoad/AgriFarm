@@ -20,6 +20,8 @@ class CreateParcellesTable extends Migration
             $table->string('localisation')->nullable();
             $table->string('etat')->nullable();
             $table->foreignId('agriculteur_id')->constrained('utilisateurs')->onDelete('cascade');
+            $table->foreignId('culture_id')->nullable()->constrained()->onDelete('cascade');
+            $table->string('stadeCroissance')->nullable();
             $table->timestamps();
         });
         

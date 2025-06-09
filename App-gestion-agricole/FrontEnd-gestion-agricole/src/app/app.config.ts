@@ -12,7 +12,6 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideHttpClient(),
     provideFirebaseApp(() => initializeApp(firebaseConfig)),
+    provideStorage(() => getStorage()), // Ajout du provider Storage
   ],
 };
-
-

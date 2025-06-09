@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { Injectable } from '@angular/core';
 import { ApiService } from '../../core/services/api.service';
+import { SupabaseStorageService } from '../../services/supabase-storage.service';
 
 interface Role {
   id: number;
@@ -17,6 +18,7 @@ interface Utilisateur {
   motDePasse?: string;
   actif?: boolean;
   roles: Role[];
+  photo?: string; // Ajout du champ photo
 }
 
 @Component({
@@ -40,12 +42,24 @@ export class UtilisateursComponent implements OnInit {
   errorMessage: string = '';
 
   showRolesDropdown = false;
+  photoFile: File | null = null;
 
-  constructor(private http: HttpClient, private api: ApiService) {}
+  userPhotoUrl: string = '';
+
+  isLoading: boolean = false; // Indicateur de chargement
+
+  constructor(
+    private http: HttpClient,
+    private api: ApiService,
+    private supabaseStorage: SupabaseStorageService
+  ) {}
 
   ngOnInit(): void {
     this.loadRoles();
     this.loadUtilisateurs();
+    // Charger la photo de profil par défaut pour tester la connexion à Supabase
+    this.userPhotoUrl =
+      'https://dgtvbjfzyfnwtwjhitrn.supabase.co/storage/v1/object/sign/user-photos/2950_1.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV80ZjlhZTFjNi03MzgzLTQyZGQtYWEyYS00NWNmMmI3NjgyZjQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJ1c2VyLXBob3Rvcy8yOTUwXzEuanBnIiwiaWF0IjoxNzQ5NDkyMjQ1LCJleHAiOjE3ODEwMjgyNDV9.Z9IaH9pwkSYYdfIsljs00TLwy2iGtBR24Hc3neX5ppQ';
   }
 
   loadRoles() {
@@ -115,12 +129,30 @@ export class UtilisateursComponent implements OnInit {
     this.showModal = true;
   }
 
-  saveUtilisateur() {
+  async saveUtilisateur() {
     if (!this.currentUtilisateur) return;
+    this.isLoading = true; // Activer le chargement
+    let photoUrl = this.currentUtilisateur['photo'] || null;
+    if (this.photoFile) {
+      photoUrl = await this.supabaseStorage.uploadUserPhoto(
+        this.photoFile,
+        this.currentUtilisateur.id
+          ? this.currentUtilisateur.id.toString()
+          : this.currentUtilisateur.email
+      );
+    }
+
     const payload = {
       ...this.currentUtilisateur,
       roles: this.currentUtilisateur.roles.map((r) => r.id),
+      photo: photoUrl,
     };
+
+    console.log(
+      'Payload complet envoyé à l’API backend :',
+      JSON.stringify(payload, null, 2)
+    );
+
     if (this.isEditing) {
       this.http
         .put(
@@ -131,9 +163,13 @@ export class UtilisateursComponent implements OnInit {
           next: () => {
             this.loadUtilisateurs();
             this.showModal = false;
+            this.photoFile = null;
+            this.isLoading = false; // Désactiver le chargement
           },
-          error: () => {
+          error: (err) => {
+            console.error('Erreur lors de la modification :', err);
             this.errorMessage = 'Erreur lors de la modification.';
+            this.isLoading = false; // Désactiver le chargement
           },
         });
     } else {
@@ -143,9 +179,13 @@ export class UtilisateursComponent implements OnInit {
           next: () => {
             this.loadUtilisateurs();
             this.showModal = false;
+            this.photoFile = null;
+            this.isLoading = false; // Désactiver le chargement
           },
-          error: () => {
+          error: (err) => {
+            console.error("Erreur lors de l'ajout :", err);
             this.errorMessage = "Erreur lors de l'ajout.";
+            this.isLoading = false; // Désactiver le chargement
           },
         });
     }
@@ -218,5 +258,14 @@ export class UtilisateursComponent implements OnInit {
     this.safeUtilisateur.roles = this.safeUtilisateur.roles.filter(
       (r) => r.id !== role.id
     );
+  }
+
+  onPhotoSelected(event: any) {
+    this.photoFile = event.target.files[0];
+  }
+
+  // Ajout d'une méthode pour afficher la photo de profil par défaut
+  getProfilePhoto(utilisateur: Utilisateur): string {
+    return utilisateur.photo || this.userPhotoUrl;
   }
 }
