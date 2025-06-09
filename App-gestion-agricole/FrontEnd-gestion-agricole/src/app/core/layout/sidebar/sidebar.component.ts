@@ -54,13 +54,12 @@ export class SidebarComponent {
     { path: '/parcelles', icon: 'Map', label: 'Parcelles' },
     { path: '/taches', icon: 'ClipboardList', label: 'Tâches' },
     { path: '/rendements', icon: 'BarChart2', label: 'Rendements' },
-    { path: '/finance', icon: 'CreditCard', label: 'Finances' },
     { path: '/capteurs', icon: 'HardDrive', label: 'Capteurs IoT' },
     { path: '/notifications', icon: 'Bell', label: 'Notifications' },
     // Liens admin
+    { path: '/Assistance', icon: 'AlertCircle', label: 'Assistance IA', adminOnly: true },
     { path: '/utilisateurs', icon: 'UserCog', label: 'Gestion Utilisateurs', adminOnly: true },
-    { path: '/analyses', icon: 'AlertCircle', label: 'Analyses IA', adminOnly: true },
-    { path: '/systeme', icon: 'Settings', label: 'Paramètres système', adminOnly: true }
+
   ];
 
   toggleMenu() {

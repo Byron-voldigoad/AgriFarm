@@ -11,6 +11,15 @@ class DatabaseSeeder extends Seeder
 {
     public function run()
     {
+        // 0. Rôles de base
+        DB::table('roles')->truncate();
+        $roles = [
+            ['nom' => 'Administrateur', 'created_at' => now(), 'updated_at' => now()],
+            ['nom' => 'Agriculteur', 'created_at' => now(), 'updated_at' => now()],
+            ['nom' => 'OuvrierAgricole', 'created_at' => now(), 'updated_at' => now()],
+        ];
+        DB::table('roles')->insert($roles);
+
         // 1. Nettoyage des tables
         DB::statement('SET FOREIGN_KEY_CHECKS=0');
         DB::table('utilisateurs')->truncate();
@@ -31,7 +40,6 @@ class DatabaseSeeder extends Seeder
                 'nom' => 'Admin Test',
                 'email' => 'admin@test.com',
                 'motDePasse' => Hash::make('password'),
-                'type' => 'Administrateur',
                 'created_at' => now(),
                 'updated_at' => now()
             ],
@@ -39,7 +47,6 @@ class DatabaseSeeder extends Seeder
                 'nom' => 'Agriculteur Test',
                 'email' => 'agriculteur@test.com',
                 'motDePasse' => Hash::make('password'),
-                'type' => 'Agriculteur',
                 'created_at' => now(),
                 'updated_at' => now()
             ],
@@ -47,7 +54,6 @@ class DatabaseSeeder extends Seeder
                 'nom' => 'Ouvrier Test',
                 'email' => 'ouvrier@test.com',
                 'motDePasse' => Hash::make('password'),
-                'type' => 'OuvrierAgricole',
                 'created_at' => now(),
                 'updated_at' => now()
             ],
@@ -55,7 +61,6 @@ class DatabaseSeeder extends Seeder
                 'nom' => 'Pierre Martin',
                 'email' => 'pierre.martin@example.com',
                 'motDePasse' => Hash::make('password'),
-                'type' => 'Agriculteur',
                 'created_at' => now(),
                 'updated_at' => now()
             ],
@@ -63,11 +68,40 @@ class DatabaseSeeder extends Seeder
                 'nom' => 'Sophie Lambert',
                 'email' => 'sophie.lambert@example.com',
                 'motDePasse' => Hash::make('password'),
-                'type' => 'OuvrierAgricole',
                 'created_at' => now(),
                 'updated_at' => now()
             ]
         ]);
+
+        // Lier les utilisateurs à leurs rôles dans la table pivot
+        $utilisateurs = DB::table('utilisateurs')->get();
+        $roles = DB::table('roles')->pluck('id', 'nom');
+        $pivot = [];
+        foreach ($utilisateurs as $u) {
+            if ($u->email === 'admin@test.com') {
+                $pivot[] = [
+                    'utilisateur_id' => $u->id,
+                    'role_id' => $roles['Administrateur'],
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ];
+            } elseif ($u->email === 'agriculteur@test.com' || $u->email === 'pierre.martin@example.com') {
+                $pivot[] = [
+                    'utilisateur_id' => $u->id,
+                    'role_id' => $roles['Agriculteur'],
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ];
+            } elseif ($u->email === 'ouvrier@test.com' || $u->email === 'sophie.lambert@example.com') {
+                $pivot[] = [
+                    'utilisateur_id' => $u->id,
+                    'role_id' => $roles['OuvrierAgricole'],
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ];
+            }
+        }
+        DB::table('role_utilisateur')->insert($pivot);
 
         // 3. Parcelles
         DB::table('parcelles')->insert([
@@ -75,7 +109,7 @@ class DatabaseSeeder extends Seeder
                 'nom' => 'Parcelle Nord',
                 'surface' => 5.20,
                 'localisation' => '3.831812, 11.497601',
-                'état' => 'En culture',
+                'etat' => 'En culture',
                 'agriculteur_id' => 2,
                 'created_at' => now(),
                 'updated_at' => now()
@@ -84,7 +118,7 @@ class DatabaseSeeder extends Seeder
                 'nom' => 'Parcelle Sud',
                 'surface' => 3.75,
                 'localisation' => '4.057571, 9.711953',
-                'état' => 'En jachère',
+                'etat' => 'En jachère',
                 'agriculteur_id' => 2,
                 'created_at' => now(),
                 'updated_at' => now()
@@ -93,7 +127,7 @@ class DatabaseSeeder extends Seeder
                 'nom' => 'Grand Champ',
                 'surface' => 12.50,
                 'localisation' => '7.377644, 13.515451',
-                'état' => 'En culture',
+                'etat' => 'En culture',
                 'agriculteur_id' => 4,
                 'created_at' => now(),
                 'updated_at' => now()

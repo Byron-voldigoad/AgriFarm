@@ -1,0 +1,166 @@
+<div class="container mx-auto px-4 py-8">
+  <!-- Header cohérent -->
+  <div class="flex justify-between items-center mb-8">
+    <div>
+      <h1 class="text-3xl font-bold text-gray-800 flex items-center gap-2">
+        <lucide-icon [name]="getIcon('ThermometerSun')"></lucide-icon>
+        Météo des Parcelles
+      </h1>
+      <p class="text-gray-500 mt-1">
+        Consultez la météo en temps réel de vos différentes parcelles
+      </p>
+    </div>
+    
+  </div>
+
+  <!-- Barre de recherche et filtre -->
+  <div class="flex flex-col md:flex-row md:items-center gap-4 mb-6">
+    <input
+      type="text"
+      [(ngModel)]="searchTerm"
+      (ngModelChange)="filterParcelles()"
+      placeholder="Rechercher une parcelle..."
+      class="w-full md:w-1/3 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+    />
+  </div>
+
+  <!-- Empty State -->
+  <div
+    *ngIf="!isLoading && filteredParcelles.length === 0"
+    class="text-center py-12"
+  >
+    <div
+      class="mx-auto w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-4"
+    >
+      <lucide-icon
+        [name]="getIcon('ThermometerSun')"
+        class="text-gray-400 w-12 h-12"
+      ></lucide-icon>
+    </div>
+    <h3 class="text-lg font-medium text-gray-900">Aucune parcelle trouvée</h3>
+    <p class="mt-1 text-sm text-gray-500">
+      Aucune parcelle ne correspond à votre recherche.
+    </p>
+  </div>
+
+  <!-- Parcelles List -->
+  <div
+    *ngIf="filteredParcelles.length > 0"
+    class="grid gap-6 md:grid-cols-2 lg:grid-cols-3"
+  >
+    <div
+      *ngFor="let parcelle of paginatedParcelles"
+      class="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200 hover:shadow-lg transition-shadow"
+    >
+      <div class="p-6">
+        <div class="flex justify-between items-start">
+          <h3 class="text-xl font-semibold text-gray-800">
+            {{ parcelle.nom }}
+          </h3>
+        </div>
+        <div class="flex items-center gap-2 mt-2">
+          <span
+            class="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800"
+            >{{ parcelle.localisation }}</span
+          >
+        </div>
+        <div class="mt-4 space-y-2 text-sm text-gray-600">
+          <div class="flex items-center gap-2">
+            🌡️
+            <span
+              >Température :
+              <b>{{ parcelle.weather?.temperature ?? "--" }} °C</b></span
+            >
+          </div>
+          <div class="flex items-center gap-2">
+            💧
+            <span
+              >Humidité :
+              <b>{{ parcelle.weather?.humidity ?? "--" }} %</b></span
+            >
+          </div>
+          <div class="flex items-center gap-2">
+            💨
+            <span
+              >Vent :
+              <b>{{ parcelle.weather?.windspeed ?? "--" }} km/h</b></span
+            >
+          </div>
+          <div *ngIf="parcelle.weather" class="text-xs text-gray-500 mt-2">
+            Dernière mise à jour :
+            {{
+              parcelle.weather.time
+                | date : "EEEE d MMMM yyyy, HH:mm" : "" : "fr-FR"
+            }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pagination -->
+  <div *ngIf="totalPages > 1" class="flex justify-center mt-10 mb-4">
+    <nav
+      class="inline-flex flex-wrap items-center rounded-xl shadow-sm bg-gray-50/90 px-2 py-1 gap-1"
+      aria-label="Pagination"
+      style="max-width: 100vw"
+    >
+      <button
+        class="h-9 w-9 sm:h-10 sm:w-10 flex items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 hover:bg-green-50 hover:text-green-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-green-400"
+        [disabled]="currentPage === 1"
+        (click)="goToPage(currentPage - 1)"
+        aria-label="Page précédente"
+      >
+        <svg
+          class="w-4 h-4"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M15 19l-7-7 7-7"
+          />
+        </svg>
+      </button>
+      <ng-container
+        *ngFor="let page of [].constructor(totalPages); let i = index"
+      >
+        <button
+          class="h-9 w-9 sm:h-10 sm:w-10 flex items-center justify-center rounded-full border border-gray-200 transition-colors font-medium text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-green-400"
+          [ngClass]="{
+            'bg-green-600 text-white shadow font-bold': currentPage === i + 1,
+            'bg-white text-gray-700 hover:bg-green-100 hover:text-green-700':
+              currentPage !== i + 1
+          }"
+          (click)="goToPage(i + 1)"
+          [attr.aria-current]="currentPage === i + 1 ? 'page' : null"
+        >
+          {{ i + 1 }}
+        </button>
+      </ng-container>
+      <button
+        class="h-9 w-9 sm:h-10 sm:w-10 flex items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 hover:bg-green-50 hover:text-green-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-green-400"
+        [disabled]="currentPage === totalPages"
+        (click)="goToPage(currentPage + 1)"
+        aria-label="Page suivante"
+      >
+        <svg
+          class="w-4 h-4"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M9 5l7 7-7 7"
+          />
+        </svg>
+      </button>
+    </nav>
+  </div>
+</div>

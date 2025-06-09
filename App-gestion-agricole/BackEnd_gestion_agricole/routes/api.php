@@ -16,5 +16,7 @@ Route::apiResources([
     'dashboard' => 'App\Http\Controllers\DashboardController'
 ]);
 
+require __DIR__.'/api_roles.php';
+
 
 // Route::get('/dashboard', [DashboardController::class, 'index']);

@@ -166,7 +166,7 @@ export class RendementComponent implements OnInit {
       (sum, r) => sum + (r.quantite || 0),
       0
     );
-  }
+  } 
 
   calculateRendement(rendement: any): number {
     return rendement.couts > 0
