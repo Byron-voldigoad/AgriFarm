@@ -47,6 +47,13 @@ export class CulturesComponent {
   cultureForm = this.fb.group({
     nom: ['', [Validators.required, Validators.minLength(2)]],
     description: [''],
+    photo: [''],
+    type_culture: ['', Validators.required],
+    conditions_climatiques: [''],
+    cout_estime: [
+      null as number | null,
+      Validators.pattern(/^[0-9]+(\.[0-9]{1,2})?$/),
+    ],
   });
 
   constructor() {
@@ -96,6 +103,9 @@ export class CulturesComponent {
     this.cultureForm.patchValue({
       nom: culture.nom,
       description: culture.description || '',
+      type_culture: culture.type_culture || '',
+      conditions_climatiques: culture.conditions_climatiques || '',
+      cout_estime: culture.cout_estime ?? null,
     });
     this.showFormDialog.set(true);
   }
@@ -106,31 +116,41 @@ export class CulturesComponent {
     this.submitting.set(true);
     const formData = this.cultureForm.value;
 
-    const cultureData = {
+    const cultureData: any = {
       nom: formData.nom!,
       description: formData.description || '',
+      type_culture: formData.type_culture || '',
+      conditions_climatiques: formData.conditions_climatiques || '',
+      cout_estime: formData.cout_estime || null,
     };
 
-    const operation =
-      this.isEditing() && this.currentCulture()
-        ? this.api.updateCulture(this.currentCulture()!.id, cultureData)
-        : this.api.createCulture(cultureData);
-
-    operation.subscribe({
-      next: (culture) => {
-        this.cultures.update((c) =>
-          this.isEditing()
-            ? c.map((item) => (item.id === culture.id ? culture : item))
-            : [...c, culture]
-        );
-        this.showFormDialog.set(false);
-      },
-      error: (err) => {
-        console.error('Erreur:', err);
-        this.submitting.set(false);
-      },
-      complete: () => this.submitting.set(false),
-    });
+    if (this.isEditing() && this.currentCulture()) {
+      this.api.updateCulture(this.currentCulture()!.id, cultureData).subscribe({
+        next: (culture) => {
+          this.cultures.update((c) =>
+            c.map((item) => (item.id === culture.id ? culture : item))
+          );
+          this.showFormDialog.set(false);
+        },
+        error: (err) => {
+          console.error('Erreur:', err);
+          this.submitting.set(false);
+        },
+        complete: () => this.submitting.set(false),
+      });
+    } else {
+      this.api.createCulture(cultureData).subscribe({
+        next: (culture) => {
+          this.cultures.update((c) => [...c, culture]);
+          this.showFormDialog.set(false);
+        },
+        error: (err) => {
+          console.error('Erreur:', err);
+          this.submitting.set(false);
+        },
+        complete: () => this.submitting.set(false),
+      });
+    }
   }
 
   confirmDelete() {

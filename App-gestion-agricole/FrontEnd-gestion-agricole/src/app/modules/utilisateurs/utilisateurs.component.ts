@@ -116,7 +116,7 @@ export class UtilisateursComponent implements OnInit {
       id: 0,
       nom: '',
       email: '',
-      motDePasse: '',
+      motDePasse: this.generateRandomPassword(), // Générer un mot de passe aléatoire
       actif: true,
       roles: [],
     };
@@ -132,6 +132,11 @@ export class UtilisateursComponent implements OnInit {
   async saveUtilisateur() {
     if (!this.currentUtilisateur) return;
     this.isLoading = true; // Activer le chargement
+
+    if (!this.isEditing) {
+      this.currentUtilisateur.motDePasse = this.generateRandomPassword(); // Générer un mot de passe aléatoire
+    }
+
     let photoUrl = this.currentUtilisateur['photo'] || null;
     if (this.photoFile) {
       photoUrl = await this.supabaseStorage.uploadUserPhoto(
@@ -146,6 +151,7 @@ export class UtilisateursComponent implements OnInit {
       ...this.currentUtilisateur,
       roles: this.currentUtilisateur.roles.map((r) => r.id),
       photo: photoUrl,
+      motDePasse: this.currentUtilisateur.motDePasse, // Inclure le mot de passe dans le payload
     };
 
     console.log(
@@ -267,5 +273,17 @@ export class UtilisateursComponent implements OnInit {
   // Ajout d'une méthode pour afficher la photo de profil par défaut
   getProfilePhoto(utilisateur: Utilisateur): string {
     return utilisateur.photo || this.userPhotoUrl;
+  }
+
+  generateRandomPassword(length: number = 10): string {
+    const characters =
+      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let password = '';
+    for (let i = 0; i < length; i++) {
+      password += characters.charAt(
+        Math.floor(Math.random() * characters.length)
+      );
+    }
+    return password;
   }
 }

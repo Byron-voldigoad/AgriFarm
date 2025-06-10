@@ -12,6 +12,10 @@ class Culture extends Model
     protected $fillable = [
         'nom',
         'description',
+        'photo',
+        'type_culture',
+        'conditions_climatiques',
+        'cout_estime',
     ];
 
 }

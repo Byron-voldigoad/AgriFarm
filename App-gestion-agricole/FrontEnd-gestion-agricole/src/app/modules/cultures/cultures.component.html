@@ -74,7 +74,34 @@
             </h3>
           </div>
           <div class="mt-4 text-gray-600 whitespace-pre-wrap flex-grow">
-            {{ culture.description || "Aucune description disponible" }}
+            <p>
+              <strong>Description:</strong>
+              {{ culture.description || "Aucune description disponible" }}
+            </p>
+            <p>
+              <strong>Type de culture:</strong>
+              {{ culture.type_culture || "Non spécifié" }}
+            </p>
+            <p>
+              <strong>Conditions climatiques:</strong>
+              {{ culture.conditions_climatiques || "Non spécifiées" }}
+            </p>
+            <p>
+              <strong>Coût estimé:</strong>
+              {{
+                culture.cout_estime
+                  ? culture.cout_estime + " €"
+                  : "Non spécifié"
+              }}
+            </p>
+          </div>
+          <div class="mt-4">
+            <img
+              *ngIf="culture.photo"
+              [src]="culture.photo"
+              alt="Photo de la culture"
+              class="w-full h-40 object-cover rounded-md border border-gray-300"
+            />
           </div>
         </div>
         <div class="p-4 bg-gray-50 border-t border-gray-100">
@@ -358,6 +385,45 @@
                   rows="3"
                   class="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm transition-colors focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
                 ></textarea>
+              </div>
+
+              <!-- Photo -->
+              <div class="space-y-2">
+                <label>Photo</label>
+                <input
+                  type="file"
+                  formControlName="photo"
+                  class="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm transition-colors focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
+                />
+              </div>
+
+              <!-- Type de culture -->
+              <div class="space-y-2">
+                <label>Type de culture</label>
+                <input
+                  type="text"
+                  formControlName="type_culture"
+                  class="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm transition-colors focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
+                />
+              </div>
+
+              <!-- Conditions climatiques -->
+              <div class="space-y-2">
+                <label>Conditions climatiques</label>
+                <textarea
+                  formControlName="conditions_climatiques"
+                  class="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm transition-colors focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
+                ></textarea>
+              </div>
+
+              <!-- Coût estimé -->
+              <div class="space-y-2">
+                <label>Coût estimé</label>
+                <input
+                  type="number"
+                  formControlName="cout_estime"
+                  class="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm transition-colors focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
+                />
               </div>
             </div>
 

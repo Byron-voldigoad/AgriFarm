@@ -173,102 +173,170 @@ class DatabaseSeeder extends Seeder
             [
                 'nom' => 'Blé d\'hiver',
                 'description' => 'Blé d\'hiver cultivé sur la parcelle Nord.',
+                'photo' => 'images/cultures/ble_hiver.jpg',
+                'type_culture' => 'Céréales',
+                'conditions_climatiques' => 'Climat tempéré avec des précipitations modérées.',
+                'cout_estime' => 1500.00,
                 'created_at' => now(),
                 'updated_at' => now()
             ],
             [
                 'nom' => 'Maïs',
                 'description' => 'Maïs cultivé sur la parcelle Sud.',
+                'photo' => 'images/cultures/mais.jpg',
+                'type_culture' => 'Céréales',
+                'conditions_climatiques' => 'Climat chaud avec un bon ensoleillement.',
+                'cout_estime' => 2000.00,
                 'created_at' => now(),
                 'updated_at' => now()
             ],
             [
                 'nom' => 'Orge de printemps',
                 'description' => 'Orge de printemps cultivé sur la parcelle Sud.',
+                'photo' => 'images/cultures/orge_printemps.jpg',
+                'type_culture' => 'Céréales',
+                'conditions_climatiques' => 'Climat tempéré avec des précipitations modérées.',
+                'cout_estime' => 1800.00,
                 'created_at' => now(),
                 'updated_at' => now()
             ],
             [
                 'nom' => 'Soja',
                 'description' => 'Soja cultivé sur la parcelle Nord.',
+                'photo' => 'images/cultures/soja.jpg',
+                'type_culture' => 'Légumineuses',
+                'conditions_climatiques' => 'Climat chaud et humide.',
+                'cout_estime' => 2200.00,
                 'created_at' => now(),
                 'updated_at' => now()
             ],
             [
                 'nom' => 'Colza',
                 'description' => 'Colza cultivé sur la parcelle Sud.',
+                'photo' => 'images/cultures/colza.jpg',
+                'type_culture' => 'Oléagineux',
+                'conditions_climatiques' => 'Climat tempéré avec des précipitations modérées.',
+                'cout_estime' => 1700.00,
                 'created_at' => now(),
                 'updated_at' => now()
             ],
             [
                 'nom' => 'Cacao',
                 'description' => 'Cacao cultivé dans la région du Centre.',
+                'photo' => 'images/cultures/cacao.jpg',
+                'type_culture' => 'Arbres fruitiers',
+                'conditions_climatiques' => 'Climat tropical humide.',
+                'cout_estime' => 2500.00,
                 'created_at' => now(),
                 'updated_at' => now()
             ],
             [
                 'nom' => 'Café',
                 'description' => 'Café cultivé dans la région de l\'Ouest.',
+                'photo' => 'images/cultures/cafe.jpg',
+                'type_culture' => 'Arbres fruitiers',
+                'conditions_climatiques' => 'Climat tropical avec des précipitations modérées.',
+                'cout_estime' => 2300.00,
                 'created_at' => now(),
                 'updated_at' => now()
             ],
             [
                 'nom' => 'Banane Plantain',
                 'description' => 'Banane Plantain cultivée dans la région du Littoral.',
+                'photo' => 'images/cultures/banane_plantain.jpg',
+                'type_culture' => 'Fruits',
+                'conditions_climatiques' => 'Climat chaud et humide.',
+                'cout_estime' => 2100.00,
                 'created_at' => now(),
                 'updated_at' => now()
             ],
             [
                 'nom' => 'Manioc',
                 'description' => 'Manioc cultivé dans la région de l\'Est.',
+                'photo' => 'images/cultures/manioc.jpg',
+                'type_culture' => 'Tubercules',
+                'conditions_climatiques' => 'Climat tropical humide.',
+                'cout_estime' => 1900.00,
                 'created_at' => now(),
                 'updated_at' => now()
             ],
             [
                 'nom' => 'Arachide',
                 'description' => 'Arachide cultivée dans la région du Nord.',
+                'photo' => 'images/cultures/arachide.jpg',
+                'type_culture' => 'Légumineuses',
+                'conditions_climatiques' => 'Climat chaud et sec.',
+                'cout_estime' => 1700.00,
                 'created_at' => now(),
                 'updated_at' => now()
             ],
             [
                 'nom' => 'Mil',
                 'description' => 'Mil cultivé dans la région de l\'Extrême-Nord.',
+                'photo' => 'images/cultures/mil.jpg',
+                'type_culture' => 'Céréales',
+                'conditions_climatiques' => 'Climat aride.',
+                'cout_estime' => 1600.00,
                 'created_at' => now(),
                 'updated_at' => now()
             ],
             [
                 'nom' => 'Sorgho',
                 'description' => 'Sorgho cultivé dans la région de l\'Adamaoua.',
+                'photo' => 'images/cultures/sorgho.jpg',
+                'type_culture' => 'Céréales',
+                'conditions_climatiques' => 'Climat semi-aride.',
+                'cout_estime' => 1800.00,
                 'created_at' => now(),
                 'updated_at' => now()
             ],
             [
                 'nom' => 'Patate Douce',
                 'description' => 'Patate Douce cultivée dans la région du Sud.',
+                'photo' => 'images/cultures/patate_douce.jpg',
+                'type_culture' => 'Tubercules',
+                'conditions_climatiques' => 'Climat tropical humide.',
+                'cout_estime' => 2000.00,
                 'created_at' => now(),
                 'updated_at' => now()
             ],
             [
                 'nom' => 'Igname',
                 'description' => 'Igname cultivée dans la région du Centre.',
+                'photo' => 'images/cultures/igname.jpg',
+                'type_culture' => 'Tubercules',
+                'conditions_climatiques' => 'Climat tropical humide.',
+                'cout_estime' => 2200.00,
                 'created_at' => now(),
                 'updated_at' => now()
             ],
             [
                 'nom' => 'Tomate',
                 'description' => 'Tomate cultivée dans la région de l\'Ouest.',
+                'photo' => 'images/cultures/tomate.jpg',
+                'type_culture' => 'Légumes',
+                'conditions_climatiques' => 'Climat tempéré avec un bon ensoleillement.',
+                'cout_estime' => 2400.00,
                 'created_at' => now(),
                 'updated_at' => now()
             ],
             [
                 'nom' => 'Ananas',
                 'description' => 'Ananas cultivé dans la région du Littoral.',
+                'photo' => 'images/cultures/ananas.jpg',
+                'type_culture' => 'Fruits',
+                'conditions_climatiques' => 'Climat chaud et humide.',
+                'cout_estime' => 2600.00,
                 'created_at' => now(),
                 'updated_at' => now()
             ],
             [
                 'nom' => 'Papaye',
                 'description' => 'Papaye cultivée dans la région du Sud.',
+                'photo' => 'images/cultures/papaye.jpg',
+                'type_culture' => 'Fruits',
+                'conditions_climatiques' => 'Climat tropical humide.',
+                'cout_estime' => 2500.00,
                 'created_at' => now(),
                 'updated_at' => now()
             ]

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Utilisateur;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class UtilisateurController extends Controller
 {
@@ -20,12 +21,19 @@ class UtilisateurController extends Controller
         $validated = $request->validate([
             'nom' => 'required|string|max:255',
             'email' => 'required|email|unique:utilisateurs',
-            'motDePasse' => 'required|string|min:8',
+            'motDePasse' => 'nullable|string|min:8', // Rendre le champ motDePasse optionnel
             'roles' => 'required|array',
             'roles.*' => 'exists:roles,id',
             'photo' => 'nullable|string', // Ajout de la validation du champ photo
         ]);
-        $validated['motDePasse'] = bcrypt($validated['motDePasse']);
+
+        // Générer un mot de passe par défaut si non fourni
+        if (empty($validated['motDePasse'])) {
+            $validated['motDePasse'] = bcrypt(Str::random(10)); // Remplacement de str_random() par Str::random()
+        } else {
+            $validated['motDePasse'] = bcrypt($validated['motDePasse']);
+        }
+
         $utilisateur = Utilisateur::create($validated);
         $utilisateur->roles()->sync($request->roles);
         return response()->json($utilisateur->load('roles'), 201);

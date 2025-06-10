@@ -21,6 +21,10 @@ class CreateCulturesTable extends Migration
             $table->foreignId('agriculteur_id')->nullable()->constrained('utilisateurs')->onDelete('cascade');
             $table->foreignId('parcelle_id')->nullable()->constrained('parcelles')->onDelete('cascade');
             $table->string('description')->nullable();
+            $table->text('photo')->nullable();
+            $table->string('type_culture');
+            $table->string('conditions_climatiques')->nullable();
+            $table->decimal('cout_estime', 10, 2)->nullable();
             $table->timestamps();
         });
         
