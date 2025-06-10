@@ -197,7 +197,7 @@ export class ParcellesComponent implements OnInit, AfterViewInit, OnDestroy {
     this.apiService.getAgriculteurs().subscribe({
       next: (agriculteurs) => {
         this.agriculteurs = agriculteurs.filter(
-          (a: any) => a.type === 'Agriculteur'
+          (a: any) => a.roles.some((role: any) => role.nom === 'Agriculteur')
         );
         this.apiService.getCultures().subscribe({
           next: (cultures) => {

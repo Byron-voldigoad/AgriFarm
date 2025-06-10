@@ -31,31 +31,29 @@
         </button>
       </div>
 
-      <!-- Search bar -->
-      <div class="mt-6 relative">
-        <div
-          class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
-        >
-          <svg
-            class="h-5 w-5 text-gray-400"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-            ></path>
-          </svg>
+      <!-- Barre de recherche -->
+      <div class="mb-6 flex flex-col sm:flex-row gap-4">
+        <div class="flex-1">
+          <input
+            type="text"
+            [value]="searchTerm()"
+            (input)="searchTerm.set($any($event.target).value)"
+            placeholder="Rechercher une culture..."
+            class="w-full rounded-md border border-gray-300 bg-white px-4 py-2 text-sm shadow-sm transition-colors focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
+          />
         </div>
-        <input
-          [(ngModel)]="searchTerm"
-          class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-          placeholder="Rechercher une culture..."
-          type="search"
-        />
+        <div class="w-full sm:w-64">
+          <select
+            [value]="selectedType()"
+            (change)="selectedType.set($any($event.target).value)"
+            class="w-full rounded-md border border-gray-300 bg-white px-4 py-2 text-sm shadow-sm transition-colors focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
+          >
+            <option value="">Tous les types</option>
+            @for (type of typesCulture; track type) {
+              <option [value]="type">{{ type }}</option>
+            }
+          </select>
+        </div>
       </div>
     </div>
 
@@ -66,44 +64,69 @@
         class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow flex flex-col h-full"
       >
         <div class="p-6 flex-grow">
-          <div class="flex justify-between items-start">
-            <h3
-              class="text-xl font-semibold text-gray-900 break-words whitespace-pre-wrap"
-            >
-              {{ culture.nom }}
-            </h3>
+          <!-- En-tête avec photo et nom -->
+          <div class="flex justify-between items-start mb-4">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 rounded-full overflow-hidden flex-shrink-0 border-2 border-green-100">
+                <img
+                  *ngIf="culture.photo"
+                  [src]="culture.photo"
+                  alt="Photo de la culture"
+                  class="w-full h-full object-cover"
+                  (error)="
+                    culture.photo =
+                      'https://dgtvbjfzyfnwtwjhitrn.supabase.co/storage/v1/object/sign/cultures-photos/agriIcons.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV80ZjlhZTFjNi03MzgzLTQyZGQtYWEyYS00NWNmMmI3NjgyZjQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJjdWx0dXJlcy1waG90b3MvYWdyaUljb25zLmpwZyIsImlhdCI6MTc0OTU4OTM4NywiZXhwIjoxNzgxMTI1Mzg3fQ.nB3Ef2Js2NONoGALZ23aCxZYhL6S78g_9WiO_LoBLDg'
+                  "
+                />
+                <img
+                  *ngIf="!culture.photo"
+                  src="https://dgtvbjfzyfnwtwjhitrn.supabase.co/storage/v1/object/sign/cultures-photos/agriIcons.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV80ZjlhZTFjNi03MzgzLTQyZGQtYWEyYS00NWNmMmI3NjgyZjQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJjdWx0dXJlcy1waG90b3MvYWdyaUljb25zLmpwZyIsImlhdCI6MTc0OTU4OTM4NywiZXhwIjoxNzgxMTI1Mzg3fQ.nB3Ef2Js2NONoGALZ23aCxZYhL6S78g_9WiO_LoBLDg"
+                  alt="Image par défaut"
+                  class="w-full h-full object-cover"
+                />
+              </div>
+              <div>
+                <h3 class="text-xl font-semibold text-gray-900">
+                  {{ culture.nom }}
+                </h3>
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 mt-1">
+                  {{ culture.type_culture || "Non spécifié" }}
+                </span>
+              </div>
+            </div>
           </div>
-          <div class="mt-4 text-gray-600 whitespace-pre-wrap flex-grow">
-            <p>
-              <strong>Description:</strong>
+
+          <!-- Description -->
+          <div class="mb-4">
+            <p class="text-gray-600 text-sm line-clamp-2">
               {{ culture.description || "Aucune description disponible" }}
             </p>
-            <p>
-              <strong>Type de culture:</strong>
-              {{ culture.type_culture || "Non spécifié" }}
-            </p>
-            <p>
-              <strong>Conditions climatiques:</strong>
-              {{ culture.conditions_climatiques || "Non spécifiées" }}
-            </p>
-            <p>
-              <strong>Coût estimé:</strong>
-              {{
-                culture.cout_estime
-                  ? culture.cout_estime + " €"
-                  : "Non spécifié"
-              }}
-            </p>
           </div>
-          <div class="mt-4">
-            <img
-              *ngIf="culture.photo"
-              [src]="culture.photo"
-              alt="Photo de la culture"
-              class="w-full h-40 object-cover rounded-md border border-gray-300"
-            />
+
+          <!-- Informations détaillées -->
+          <div class="grid grid-cols-2 gap-4 text-sm">
+            <div class="flex items-start gap-2">
+              <svg class="w-5 h-5 text-gray-400 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"></path>
+              </svg>
+              <div>
+                <p class="text-gray-500">Conditions</p>
+                <p class="text-gray-900 font-medium">{{ culture.conditions_climatiques || "Non spécifiées" }}</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-2">
+              <svg class="w-5 h-5 text-gray-400 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              <div>
+                <p class="text-gray-500">Coût estimé</p>
+                <p class="text-gray-900 font-medium">{{ culture.cout_estime ? culture.cout_estime + " FCFA" : "Non spécifié" }}</p>
+              </div>
+            </div>
           </div>
         </div>
+
+        <!-- Actions -->
         <div class="p-4 bg-gray-50 border-t border-gray-100">
           <div class="flex justify-end space-x-2">
             <button
@@ -160,9 +183,34 @@
       <div class="bg-white rounded-lg shadow-sm overflow-hidden">
         <div class="p-4">
           <div class="flex justify-between items-center">
-            <h3 class="text-lg font-medium text-gray-900 truncate pr-2">
-              {{ culture.nom }}
-            </h3>
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full overflow-hidden flex-shrink-0 border-2 border-green-100">
+                <img
+                  *ngIf="culture.photo"
+                  [src]="culture.photo"
+                  alt="Photo de la culture"
+                  class="w-full h-full object-cover"
+                  (error)="
+                    culture.photo =
+                      'https://dgtvbjfzyfnwtwjhitrn.supabase.co/storage/v1/object/sign/cultures-photos/agriIcons.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV80ZjlhZTFjNi03MzgzLTQyZGQtYWEyYS00NWNmMmI3NjgyZjQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJjdWx0dXJlcy1waG90b3MvYWdyaUljb25zLmpwZyIsImlhdCI6MTc0OTU4OTM4NywiZXhwIjoxNzgxMTI1Mzg3fQ.nB3Ef2Js2NONoGALZ23aCxZYhL6S78g_9WiO_LoBLDg'
+                  "
+                />
+                <img
+                  *ngIf="!culture.photo"
+                  src="https://dgtvbjfzyfnwtwjhitrn.supabase.co/storage/v1/object/sign/cultures-photos/agriIcons.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV80ZjlhZTFjNi03MzgzLTQyZGQtYWEyYS00NWNmMmI3NjgyZjQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJjdWx0dXJlcy1waG90b3MvYWdyaUljb25zLmpwZyIsImlhdCI6MTc0OTU4OTM4NywiZXhwIjoxNzgxMTI1Mzg3fQ.nB3Ef2Js2NONoGALZ23aCxZYhL6S78g_9WiO_LoBLDg"
+                  alt="Image par défaut"
+                  class="w-full h-full object-cover"
+                />
+              </div>
+              <div>
+                <h3 class="text-lg font-medium text-gray-900">
+                  {{ culture.nom }}
+                </h3>
+                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 mt-1">
+                  {{ culture.type_culture || "Non spécifié" }}
+                </span>
+              </div>
+            </div>
             <div class="flex space-x-2 flex-shrink-0">
               <button
                 (click)="openEditDialog(culture); $event.stopPropagation()"
@@ -206,28 +254,6 @@
                   ></path>
                 </svg>
               </button>
-              <button
-                (click)="toggleDescription(culture.id)"
-                class="text-gray-500 hover:text-gray-700 p-1.5 rounded-md hover:bg-gray-100 transition-colors"
-                [attr.aria-expanded]="
-                  expandedDescriptions[culture.id] ? 'true' : 'false'
-                "
-              >
-                <svg
-                  class="w-5 h-5 transform transition-transform"
-                  [class.rotate-180]="expandedDescriptions[culture.id]"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M19 9l-7 7-7-7"
-                  ></path>
-                </svg>
-              </button>
             </div>
           </div>
 
@@ -241,6 +267,28 @@
             <p class="text-gray-600 text-sm whitespace-pre-wrap overflow-auto">
               {{ culture.description || "Aucune description disponible" }}
             </p>
+          </div>
+
+          <!-- Informations détaillées -->
+          <div class="mt-4 grid grid-cols-2 gap-4 text-sm">
+            <div class="flex items-start gap-2">
+              <svg class="w-5 h-5 text-gray-400 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"></path>
+              </svg>
+              <div>
+                <p class="text-gray-500">Conditions</p>
+                <p class="text-gray-900 font-medium">{{ culture.conditions_climatiques || "Non spécifiées" }}</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-2">
+              <svg class="w-5 h-5 text-gray-400 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              <div>
+                <p class="text-gray-500">Coût estimé</p>
+                <p class="text-gray-900 font-medium">{{ culture.cout_estime ? culture.cout_estime + " FCFA" : "Non spécifié" }}</p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -389,36 +437,63 @@
 
               <!-- Photo -->
               <div class="space-y-2">
-                <label>Photo</label>
+                <label class="block text-sm font-medium text-gray-700"
+                  >Photo</label
+                >
                 <input
                   type="file"
-                  formControlName="photo"
+                  (change)="onPhotoSelected($event)"
+                  accept="image/*"
                   class="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm transition-colors focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
                 />
+                <div *ngIf="currentCulture()?.photo" class="mt-2">
+                  <img
+                    [src]="currentCulture()?.photo"
+                    alt="Photo de la culture"
+                    class="h-32 w-32 object-cover rounded-lg border"
+                  />
+                </div>
               </div>
 
               <!-- Type de culture -->
               <div class="space-y-2">
-                <label>Type de culture</label>
-                <input
-                  type="text"
+                <label class="block text-sm font-medium text-gray-700"
+                  >Type de culture</label
+                >
+                <select
                   formControlName="type_culture"
                   class="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm transition-colors focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
-                />
+                >
+                  <option value="">Sélectionnez un type</option>
+                  @for (type of typesCulture; track type) {
+                  <option [value]="type">{{ type }}</option>
+                  }
+                </select>
+                @if (cultureForm.get('type_culture')?.invalid &&
+                cultureForm.get('type_culture')?.touched) {
+                <div class="text-red-500 text-xs mt-1">
+                  Le type de culture est requis
+                </div>
+                }
               </div>
 
               <!-- Conditions climatiques -->
               <div class="space-y-2">
-                <label>Conditions climatiques</label>
+                <label class="block text-sm font-medium text-gray-700"
+                  >Conditions climatiques</label
+                >
                 <textarea
                   formControlName="conditions_climatiques"
+                  rows="3"
                   class="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm transition-colors focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
                 ></textarea>
               </div>
 
               <!-- Coût estimé -->
               <div class="space-y-2">
-                <label>Coût estimé</label>
+                <label class="block text-sm font-medium text-gray-700"
+                  >Coût estimé</label
+                >
                 <input
                   type="number"
                   formControlName="cout_estime"

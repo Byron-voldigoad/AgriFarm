@@ -15,7 +15,10 @@ interface Task {
 interface Worker {
   id: number;
   nom: string;
-  type?: string;
+  roles: {
+    id: number;
+    nom: string;
+  }[];
 }
 
 @Component({
@@ -92,12 +95,12 @@ export class TachesComponent implements OnInit {
 
   loadWorkers(): void {
     this.http
-      .get<Worker[]>(`${this.baseUrl}/utilisateurs?type=OuvrierAgricole`)
+      .get<Worker[]>(`${this.baseUrl}/utilisateurs`)
       .subscribe(
         (data) => {
-          // Filtrer côté front si jamais l'API retourne plus que les ouvriers
+          // Filtrer les utilisateurs qui ont le rôle OuvrierAgricole
           this.workers = data.filter((w) =>
-            (w.type || '').toLowerCase().includes('ouvrier')
+            w.roles.some((role: any) => role.nom === 'OuvrierAgricole')
           );
           if (this.workers.length > 0 && !this.currentTask.ouvrier_id) {
             this.currentTask.ouvrier_id = this.workers[0].id;

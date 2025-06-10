@@ -11,8 +11,34 @@ class UtilisateurController extends Controller
     // GET /api/utilisateurs
     public function index()
     {
-        $utilisateurs = Utilisateur::with('roles')->get();
+        $utilisateurs = Utilisateur::with(['roles' => function($query) {
+            $query->select('roles.id', 'roles.nom');
+        }])->get();
+        
+        // Transformer les données pour inclure les rôles de manière plus claire
+        $utilisateurs->transform(function ($utilisateur) {
+            $utilisateur->roles = $utilisateur->roles->map(function ($role) {
+                return [
+                    'id' => $role->id,
+                    'nom' => $role->nom
+                ];
+            });
+            return $utilisateur;
+        });
+
         return response()->json($utilisateurs);
+    }
+
+    // GET /api/utilisateurs/agriculteurs
+    public function getAgriculteurs()
+    {
+        $agriculteurs = Utilisateur::whereHas('roles', function($query) {
+            $query->where('nom', 'Agriculteur');
+        })->with(['roles' => function($query) {
+            $query->select('roles.id', 'roles.nom');
+        }])->get();
+
+        return response()->json($agriculteurs);
     }
 
     // POST /api/utilisateurs

@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { CropYieldChartComponent } from './components/crop-yield-chart.component';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 
 interface Card {
   title: string;
@@ -41,7 +42,7 @@ export class DashboardComponent implements OnInit {
   chartData: ChartData = { labels: [], datasets: [] };
   isLoading = true;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private router: Router) {}
 
   ngOnInit(): void {
     this.fetchDashboardData();
@@ -85,5 +86,9 @@ export class DashboardComponent implements OnInit {
             this.cards = data.cards;
             this.tasks = data.tasks;
         });
+}
+
+navigateToTasks() {
+  this.router.navigate(['/taches']);
 }
 }

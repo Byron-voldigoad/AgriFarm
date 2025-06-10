@@ -55,7 +55,6 @@ export class SidebarComponent {
     { path: '/taches', icon: 'ClipboardList', label: 'Tâches' },
     { path: '/rendements', icon: 'BarChart2', label: 'Rendements' },
     { path: '/capteurs', icon: 'HardDrive', label: 'Capteurs IoT' },
-    { path: '/notifications', icon: 'Bell', label: 'Notifications' },
     // Liens admin
     { path: '/Assistance', icon: 'AlertCircle', label: 'Assistance IA', adminOnly: true },
     { path: '/utilisateurs', icon: 'UserCog', label: 'Gestion Utilisateurs', adminOnly: true },

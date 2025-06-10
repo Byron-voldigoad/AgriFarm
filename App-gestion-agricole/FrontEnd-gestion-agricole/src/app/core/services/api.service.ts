@@ -5,6 +5,7 @@ import { Parcelle } from '../models/parcelle.model';
 import { DashboardData } from '../models/dashboard.model';
 import { Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
+import { Utilisateur } from '../models/utilisateur.model';
 
 @Injectable({
   providedIn: 'root',
@@ -63,7 +64,11 @@ export class ApiService {
     );
   }
 
-  getAgriculteurs(): Observable<any> {
-    return this.http.get(`${this.baseUrl}/utilisateurs?type=Agriculteur`);
+  getUtilisateurs(): Observable<Utilisateur[]> {
+    return this.http.get<Utilisateur[]>(`${this.baseUrl}/utilisateurs`);
+  }
+
+  getAgriculteurs(): Observable<Utilisateur[]> {
+    return this.http.get<Utilisateur[]>(`${this.baseUrl}/utilisateurs/agriculteurs`);
   }
 }

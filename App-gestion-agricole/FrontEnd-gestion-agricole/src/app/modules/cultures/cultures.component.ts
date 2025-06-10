@@ -9,6 +9,8 @@ import {
 import { RouterModule } from '@angular/router';
 import { ApiService } from '../../core/services/api.service';
 import { Culture } from '../../core/models/culture.model';
+import { HttpClient } from '@angular/common/http';
+import { SupabaseStorageService } from '../../services/supabase-storage.service';
 
 @Component({
   selector: 'app-cultures',
@@ -20,12 +22,27 @@ import { Culture } from '../../core/models/culture.model';
 export class CulturesComponent {
   private api = inject(ApiService);
   private fb = inject(FormBuilder);
+  private http = inject(HttpClient);
+  private supabaseStorage = inject(SupabaseStorageService);
+
+  // Types de culture prédéfinis
+  readonly typesCulture = [
+    'Céréales',
+    'Légumineuses',
+    'Tubercules',
+    'Légumes',
+    'Fruits',
+    'Plantes aromatiques',
+    'Plantes médicinales',
+    'Autres'
+  ];
 
   // États avec les signaux
   cultures = signal<Culture[]>([]);
   filteredCultures = signal<Culture[]>([]);
   loading = signal(true);
   searchTerm = signal('');
+  selectedType = signal<string>('');
 
   // Dialogues
   showFormDialog = signal(false);
@@ -39,6 +56,9 @@ export class CulturesComponent {
   pageSize = 6;
   currentPage = 1;
 
+  photoFile: File | null = null;
+  isLoading = false;
+
   toggleDescription(id: number) {
     this.expandedDescriptions[id] = !this.expandedDescriptions[id];
   }
@@ -47,13 +67,9 @@ export class CulturesComponent {
   cultureForm = this.fb.group({
     nom: ['', [Validators.required, Validators.minLength(2)]],
     description: [''],
-    photo: [''],
     type_culture: ['', Validators.required],
     conditions_climatiques: [''],
-    cout_estime: [
-      null as number | null,
-      Validators.pattern(/^[0-9]+(\.[0-9]{1,2})?$/),
-    ],
+    cout_estime: [undefined as number | undefined]
   });
 
   constructor() {
@@ -61,14 +77,19 @@ export class CulturesComponent {
 
     effect(() => {
       const term = this.searchTerm().toLowerCase();
+      const type = this.selectedType();
+      
       this.filteredCultures.set(
-        term
-          ? this.cultures().filter(
-              (c) =>
-                c.nom.toLowerCase().includes(term) ||
-                (c.description && c.description.toLowerCase().includes(term))
-            )
-          : [...this.cultures()]
+        this.cultures().filter((c) => {
+          const matchesSearch = term
+            ? c.nom.toLowerCase().includes(term) ||
+              (c.description && c.description.toLowerCase().includes(term))
+            : true;
+          
+          const matchesType = type ? c.type_culture === type : true;
+          
+          return matchesSearch && matchesType;
+        })
       );
     });
   }
@@ -105,52 +126,18 @@ export class CulturesComponent {
       description: culture.description || '',
       type_culture: culture.type_culture || '',
       conditions_climatiques: culture.conditions_climatiques || '',
-      cout_estime: culture.cout_estime ?? null,
+      cout_estime: culture.cout_estime || undefined
     });
     this.showFormDialog.set(true);
   }
 
+  onPhotoSelected(event: any) {
+    this.photoFile = event.target.files[0];
+  }
+
   onSubmit() {
     if (this.cultureForm.invalid) return;
-
-    this.submitting.set(true);
-    const formData = this.cultureForm.value;
-
-    const cultureData: any = {
-      nom: formData.nom!,
-      description: formData.description || '',
-      type_culture: formData.type_culture || '',
-      conditions_climatiques: formData.conditions_climatiques || '',
-      cout_estime: formData.cout_estime || null,
-    };
-
-    if (this.isEditing() && this.currentCulture()) {
-      this.api.updateCulture(this.currentCulture()!.id, cultureData).subscribe({
-        next: (culture) => {
-          this.cultures.update((c) =>
-            c.map((item) => (item.id === culture.id ? culture : item))
-          );
-          this.showFormDialog.set(false);
-        },
-        error: (err) => {
-          console.error('Erreur:', err);
-          this.submitting.set(false);
-        },
-        complete: () => this.submitting.set(false),
-      });
-    } else {
-      this.api.createCulture(cultureData).subscribe({
-        next: (culture) => {
-          this.cultures.update((c) => [...c, culture]);
-          this.showFormDialog.set(false);
-        },
-        error: (err) => {
-          console.error('Erreur:', err);
-          this.submitting.set(false);
-        },
-        complete: () => this.submitting.set(false),
-      });
-    }
+    this.saveCulture();
   }
 
   confirmDelete() {
@@ -185,5 +172,65 @@ export class CulturesComponent {
   goToPage(page: number) {
     if (page < 1 || page > this.totalPages()) return;
     this.currentPage = page;
+  }
+
+  async saveCulture() {
+    if (this.cultureForm.invalid) return;
+
+    this.submitting.set(true);
+    const formData = this.cultureForm.value;
+
+    try {
+      let photoUrl = this.currentCulture()?.photo || null;
+      if (this.photoFile) {
+        photoUrl = await this.supabaseStorage.uploadCulturePhoto(
+          this.photoFile,
+          this.currentCulture()?.id?.toString() || 'new'
+        );
+      }
+
+      const payload = {
+        ...formData,
+        photo: photoUrl || undefined,
+        nom: formData.nom || '',
+        description: formData.description || undefined,
+        type_culture: formData.type_culture || '',
+        conditions_climatiques: formData.conditions_climatiques || '',
+        cout_estime: formData.cout_estime || undefined
+      };
+
+      if (this.isEditing() && this.currentCulture()) {
+        this.api.updateCulture(this.currentCulture()!.id, payload).subscribe({
+          next: (culture) => {
+            this.cultures.update((c) =>
+              c.map((item) => (item.id === culture.id ? culture : item))
+            );
+            this.showFormDialog.set(false);
+            this.photoFile = null;
+            this.submitting.set(false);
+          },
+          error: (err) => {
+            console.error('Erreur:', err);
+            this.submitting.set(false);
+          }
+        });
+      } else {
+        this.api.createCulture(payload).subscribe({
+          next: (culture) => {
+            this.cultures.update((c) => [...c, culture]);
+            this.showFormDialog.set(false);
+            this.photoFile = null;
+            this.submitting.set(false);
+          },
+          error: (err) => {
+            console.error('Erreur:', err);
+            this.submitting.set(false);
+          }
+        });
+      }
+    } catch (error) {
+      console.error('Erreur lors de l\'upload de la photo:', error);
+      this.submitting.set(false);
+    }
   }
 }

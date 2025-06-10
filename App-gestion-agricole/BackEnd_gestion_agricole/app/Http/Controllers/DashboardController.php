@@ -18,14 +18,12 @@ class DashboardController extends Controller
         $filter = $request->input('filter', 'this_year'); // Définition de $filter avec valeur par défaut
         
         // 1. Calcul des cultures actives
-        $culturesActives = Parcelle::whereNotNull('datePlantation')->count();
-        $culturesLastYear = Parcelle::whereNotNull('datePlantation')
-                            ->whereYear('datePlantation', '<', $currentYear)
-                            ->count();
+        $culturesActives = Culture::count();
+        $culturesLastYear = Culture::whereYear('created_at', '<', $currentYear)->count();
         
         // 2. Calcul des tâches
-        $tachesEnCours = Tache::where('status', 'En cours')->count();
-        $tachesRecent = Tache::where('status', 'En cours')
+        $tachesEnCours = Tache::where('status', 'en_attente')->count();
+        $tachesRecent = Tache::where('status', 'en_attente')
                        ->where('dateDebut', '>=', now()->subMonth())
                        ->count();
         
@@ -73,7 +71,7 @@ class DashboardController extends Controller
         ];
     
         // Tâches récentes
-        $tasks = Tache::where('status', 'En cours')
+        $tasks = Tache::where('status', 'en_attente')
             ->orderBy('dateDebut', 'desc')
             ->take(5)
             ->get()
