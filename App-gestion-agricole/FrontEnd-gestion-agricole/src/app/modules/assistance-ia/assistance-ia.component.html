@@ -1,1 +1,48 @@
-<p>assistance-ia works!</p>
+<div class="p-4 sm:p-6 lg:p-8">
+  <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+    <i class="fas fa-lightbulb mr-3 text-yellow-500"></i>
+    Recommandations de l'Assistant IA
+  </h2>
+
+  <div *ngIf="errorMessage" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative mb-6" role="alert">
+    <strong class="font-bold">Erreur:</strong>
+    <span class="block sm:inline">{{ errorMessage }}</span>
+  </div>
+
+  <div *ngIf="!errorMessage && recommandations.length === 0" class="text-center py-12 text-gray-500">
+    <p class="text-lg">Chargement des recommandations...</p>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" *ngIf="recommandations.length > 0">
+    <div *ngFor="let reco of recommandations" class="bg-white rounded-lg shadow-md overflow-hidden transition-transform duration-200 hover:-translate-y-1">
+      
+      <div 
+        class="p-4 text-white"
+        [ngClass]="{
+          'bg-red-500': reco.priorite === 'haute',
+          'bg-yellow-500': reco.priorite === 'moyenne',
+          'bg-blue-500': reco.priorite === 'basse'
+        }">
+        <div class="flex justify-between items-center">
+          <h3 class="text-lg font-semibold">{{ reco.titre }}</h3>
+          <span class="text-sm font-bold capitalize px-2 py-1 rounded-full bg-white/20">{{ reco.priorite }}</span>
+        </div>
+      </div>
+      
+      <div class="p-4">
+        <p class="font-semibold text-gray-600 mb-2">
+          Parcelle: {{ reco.parcelle.nom }}
+        </p>
+        <p class="text-gray-700">
+          {{ reco.contenu }}
+        </p>
+      </div>
+      
+      <div class="px-4 py-3 bg-gray-50 border-t border-gray-200 flex justify-between items-center text-xs text-gray-500">
+        <span class="font-bold uppercase bg-gray-200 text-gray-700 px-2 py-1 rounded-md">{{ reco.type }}</span>
+        <span>Généré le: {{ reco.created_at | date: 'dd/MM/yyyy à HH:mm' }}</span>
+      </div>
+
+    </div>
+  </div>
+</div>

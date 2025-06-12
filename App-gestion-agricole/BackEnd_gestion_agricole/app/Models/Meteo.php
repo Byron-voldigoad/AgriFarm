@@ -4,19 +4,16 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Parcelle;
 
-class Recommandation extends Model
+class Meteo extends Model
 {
     use HasFactory;
 
     protected $fillable = [
         'parcelle_id',
-        'titre',
-        'contenu',
-        'type',
-        'priorite',
-        'status',
+        'temperature',
+        'humidite',
+        'pluie'
     ];
 
     public function parcelle()

@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
         // 1. Nettoyage des tables
         DB::statement('SET FOREIGN_KEY_CHECKS=0');
         DB::table('utilisateurs')->truncate();
+        DB::table('role_utilisateur')->truncate();
         DB::table('cultures')->truncate();
         DB::table('parcelles')->truncate();
         DB::table('finances')->truncate();
@@ -341,8 +342,29 @@ class DatabaseSeeder extends Seeder
                 'updated_at' => now()
             ]
         ]);
-    
-        // 5. Finances - Données mensuelles de 2024 à maintenant
+
+        // 5. Recommandations de test
+        $parcelles = DB::table('parcelles')->get();
+        
+        $recommandations = [];
+        foreach ($parcelles as $parcelle) {
+            $recommandations[] = [
+                'parcelle_id' => $parcelle->id,
+                'titre' => 'Recommandation pour ' . $parcelle->nom,
+                'contenu' => $parcelle->etat === 'En jachère' 
+                    ? 'Cette parcelle est en jachère. Il est recommandé de préparer une culture de légumineuses pour enrichir le sol.' 
+                    : 'Surveillance recommandée pour cette parcelle en culture. Vérifiez régulièrement l\'état des plantes et l\'humidité du sol.',
+                'type' => $parcelle->etat === 'En jachère' ? 'CULTURE' : 'ENTRETIEN',
+                'priorite' => $parcelle->etat === 'En jachère' ? 'moyenne' : 'haute',
+                'status' => 'proposée',
+                'created_at' => now(),
+                'updated_at' => now()
+            ];
+        }
+
+        DB::table('recommandations')->insert($recommandations);
+
+        // 6. Finances - Données mensuelles de 2024 à maintenant
         $finances = [];
         $startDate = Carbon::create(2024, 1, 1);
         
@@ -358,7 +380,7 @@ class DatabaseSeeder extends Seeder
         }
         DB::table('finances')->insert($finances);
     
-        // 6. Rendements - Récoltes passées et actuelles
+        // 7. Rendements - Récoltes passées et actuelles
         DB::table('rendements')->insert([
             [
                 'quantité' => 3200.50,
@@ -442,7 +464,7 @@ class DatabaseSeeder extends Seeder
             ]
         ]);
 
-        // 7. Tâches
+        // 8. Tâches
         $taches = [
             ['Labour hivernal', '2024-11-05', '2024-11-10', 'Terminée', 3],
             ['Semis printanier', $currentYear.'-03-15', $currentYear.'-03-20', 'Terminée', 3],
@@ -466,7 +488,7 @@ class DatabaseSeeder extends Seeder
             ]);
         }
 
-        // 8. Analyses et Recommandations
+        // 9. Analyses et Recommandations
         $analyses = [
             ['2025-04-15', 'Analyse du sol pour la parcelle 1', 1],
             ['2025-03-10', 'Analyse du pH du sol', 2]
@@ -481,14 +503,14 @@ class DatabaseSeeder extends Seeder
                 'updated_at' => now()
             ]);
 
-            DB::table('recommandations')->insert([
-                'contenu' => 'Utiliser un engrais riche en azote pour la parcelle '.$analyse[2],
-                'dateGeneration' => $analyse[0],
-                'analyse_id' => $analyseId,
-                'agriculteur_id' => 2,
-                'created_at' => now(),
-                'updated_at' => now()
-            ]);
+            // DB::table('recommandations')->insert([
+            //     'contenu' => 'Utiliser un engrais riche en azote pour la parcelle '.$analyse[2],
+            //     'dateGeneration' => $analyse[0],
+            //     'analyse_id' => $analyseId,
+            //     'agriculteur_id' => 2,
+            //     'created_at' => now(),
+            //     'updated_at' => now()
+            // ]);
         }
 
         // 10. Notifications

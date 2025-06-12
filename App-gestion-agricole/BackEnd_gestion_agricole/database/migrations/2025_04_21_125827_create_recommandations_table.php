@@ -15,10 +15,12 @@ class CreateRecommandationsTable extends Migration
     {
         Schema::create('recommandations', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('parcelle_id')->constrained('parcelles')->onDelete('cascade');
+            $table->string('titre');
             $table->text('contenu');
-            $table->date('dateGeneration');
-            $table->foreignId('analyse_id')->constrained('analyses')->onDelete('cascade');
-            $table->foreignId('agriculteur_id')->constrained('utilisateurs')->onDelete('cascade');
+            $table->string('type')->comment('ex: CULTURE, ENTRETIEN, FERTILISATION');
+            $table->enum('priorite', ['haute', 'moyenne', 'basse'])->default('moyenne');
+            $table->enum('status', ['proposée', 'lue', 'acceptée'])->default('proposée');
             $table->timestamps();
         });
         

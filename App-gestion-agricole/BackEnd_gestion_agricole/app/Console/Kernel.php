@@ -15,7 +15,8 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')->hourly();
+        // Générer les recommandations automatiquement tous les jours à 8h
+        $schedule->command('ia:generate-recommendations')->dailyAt('08:00');
     }
 
     /**

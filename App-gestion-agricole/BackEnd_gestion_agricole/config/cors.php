@@ -21,7 +21,7 @@ return [
 
     'allowed_origins' => ['http://localhost:4200'],
 
-    'allowed_origins_patterns' => [],
+    'allowed_origins_patterns' => ['http://localhost:*'],
 
     'allowed_headers' => ['*'],
 

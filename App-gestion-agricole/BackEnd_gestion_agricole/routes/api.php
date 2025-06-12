@@ -13,7 +13,11 @@ use App\Http\Controllers\AnalyseController;
 use App\Http\Controllers\RecommandationController;
 use App\Http\Controllers\DashboardController;
 
+// Route pour les recommandations
+Route::get('/recommandations', [RecommandationController::class, 'index']);
+
 // Routes spécifiques pour les utilisateurs
+Route::post('/meteo', [MeteoController::class, 'store']);
 Route::get('/utilisateurs/agriculteurs', [UtilisateurController::class, 'getAgriculteurs']);
 
 // Routes CRUD génériques
@@ -27,7 +31,6 @@ Route::apiResources([
     'notifications' => NotificationController::class,
     'capteurs' => CapteurIoTController::class,
     'analyses' => AnalyseController::class,
-    'recommandations' => RecommandationController::class,
     'dashboard' => DashboardController::class
 ]);
 
@@ -35,5 +38,6 @@ require __DIR__.'/api_roles.php';
 
 Route::get('/utilisateurs', [UtilisateurController::class, 'index']);
 Route::get('/utilisateurs/{id}', [UtilisateurController::class, 'show']);
+
 
 // Route::get('/dashboard', [DashboardController::class, 'index']);
